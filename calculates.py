@@ -19,7 +19,22 @@ dmt = [0,0]
 tk = [0,0]
 Vx = [0,0]
 
+P_vacuum = 0
+P_ud = 0
+P_ud_vacuum = 0
+
+Vk = 0
+H0 = 0
+i = 0
+fi_0 = 0
+A = 0
+Vw = 0
+Vk = 0
+
+m_correct = 0
+
 def ballistic_parameters(rocket):
+    global m, mt, z, P_midel, n0, k_hight_engine, dmt, tk, Vx, P_vacuum, P_ud, P_ud_vacuum, Vk, H0, i, fi_0, A, Vw, Vk
 
     m_start = rocket['m'][0] + rocket['m'][1] + rocket['m_pn']
     last_mass = m_start
@@ -46,6 +61,9 @@ def ballistic_parameters(rocket):
         # Decrement of mass the next step of Rocket.
         last_mass = last_mass - rocket['m'][i]
 
+    P_vacuum = rocket['P_vacuum']
+    P_ud = rocket['P_ud']
+    P_ud_vacuum = rocket['P_ud_vacuum']
 
     # Reformat of return values.
     data = {}
@@ -83,6 +101,8 @@ def ballistic_parameters(rocket):
     return rocket | data
 
 def calcs_Vx(ballistic_data):
+    global H0, i, fi_0, V0, A, Vw, Vk
+
     H0 = ballistic_data['H']
     i = radians(ballistic_data['i'])
     fi_0 = radians(ballistic_data['fi_0'])
@@ -94,3 +114,31 @@ def calcs_Vx(ballistic_data):
     Vk = sqrt(V0 ** 2 + Vw ** 2 - 2 * V0 * Vw * sin(A))
 
     return Vk
+
+def correct_mass_fuel():
+
+    dV = 1
+    while abs(dV) > 0.1:
+        Vmax = float(input("Расчитайте Vmax и введите его: "))
+
+        dV = Vmax - Vk
+        z2_correct = z[1] * exp(-(dV / P_ud_vacuum[1]))
+        m_correct = ((z2_correct - 1) / z2_correct) * m[1]
+        tk_correct = m_correct / dmt[1]
+
+        dV = round(dV, 3)
+        z2_correct = round(z2_correct, 3)
+        m_correct = round(m_correct, 3)
+        tk_correct = round(tk_correct, 3)
+
+        print(f"\ndV: {dV}\nz2: {z2_correct}\nm_correct: {m_correct}\ntk_correct: {tk_correct}")
+        print("Ошибка в скорости выведения: ", dV)
+
+    else:
+        print("Погрешность удовлетворяет 0.1 м/с")
+        return m_correct
+
+
+def swap_start_to_iner(Xk, Yk):
+
+    x0 = -Xk * cos(A0)
