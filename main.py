@@ -55,6 +55,7 @@ ballistic_data = {
     'H': 190,
     'i': 63,
     'fi_0': 62.8,
+    'target_H': 415,
 }
 
 ballistic_pars = ballistic_parameters(rocket)
@@ -63,7 +64,7 @@ calcs_Vx(ballistic_data)
 #     print(key, ' ', ballistic_pars[key])
 
 correct_mass_fuel()
+swap_start_to_iner()
 
-#
 # document.render(content)
 # document.save("saved_test.docx")
