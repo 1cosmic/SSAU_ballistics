@@ -1,0 +1,47 @@
+name: Тор-Эджена Д
+user_name: Цыцаров Д.А.
+number_exs: 12
+m: (95, 26)
+mt: (88, 24)
+mk: (7, 2)
+P0: (2100, '-')
+P_vacuum: (2415, 900)
+P_ud: (2746, '-')
+P_ud_vacuum: (3158, 2835)
+D_midel: (3, 1.9)
+m1: 95
+m2: 26
+mt1: 88
+mt2: 24
+mk1: 7
+mk2: 2
+P0_1: 2100
+P0_2: -
+P_vacuum_1: 2415
+P_vacuum_2: 900
+P_ud_1: 2746
+P_ud_2: -
+P_ud_vacuum_1: 3158
+P_ud_vacuum_2: 2835
+D_midel_1: 3
+D_midel_2: 1.9
+m_pn: 1
+type_of_fuel: Аэрозин + тетраоксид
+m_start: 122
+m_step_1: 122
+m_step_2: 27
+z_1: 3.588
+z_2: 9.0
+P_midel_1: 17.259
+P_midel_2: 9.523
+n0_1: 1.756
+n0_2: 3.401
+k_hight_engine_1: 1.15
+k_hight_engine_2: -
+dmt_1: 0.765
+dmt_2: 0.317
+tk_1: 115.074
+tk_2: 75.6
+Vx_1: 4034.852
+Vx_2: 6229.132
+V_sum: 10263.984

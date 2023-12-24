@@ -1,4 +1,3 @@
-import random
 from math import *
 
 
@@ -65,7 +64,6 @@ def ballistic_parameters(rocket):
         dmt[i] = P_vacuum / P_ud_vacuum
         tk[i] = mt[i] / dmt[i]
 
-
         Vx[i] = P_ud_vacuum * log(z[i])
 
         # Decrement of mass the next step of Rocket.
@@ -79,9 +77,6 @@ def ballistic_parameters(rocket):
 
     # Reformat of return values.
     data = {}
-    data['m1_first'] = rocket['m'][0]
-    data['m2_first'] = rocket['m'][1]
-
     data['m_start'] = m_start
     data['m_step_1'] = m[0]
     data['m_step_2'] = m[1]
@@ -108,10 +103,10 @@ def ballistic_parameters(rocket):
     data['Vx_2'] = Vx[1]
     data['V_sum'] = Vx[0] + Vx[1]
 
-    # # Round all values for human)
-    # for key in data:
-    #     if data[key] != "-":
-    #         data[key] = round(data[key], 3)
+    # Round all values for human)
+    for key in data:
+        if data[key] != "-":
+            data[key] = round(data[key], 3)
 
     return rocket | data
 
@@ -129,90 +124,74 @@ def calcs_Vx(ballistic_data):
     Vw = w_Earth * R * cos(fi_0)
 
     Vk = sqrt(V0 ** 2 + Vw ** 2 - 2 * V0 * Vw * sin(A))
-    print(Vk)
     A0 = acos((V0 / Vk) * cos(A))
 
     data = {
         'H': H,
         'H0': H0,
-        'i': degrees(i),
-        'i_target': degrees(i_target),
-        'fi_0': degrees(fi_0),
+        'i': i,
+        'i_target': i_target,
+        'fi_0': fi_0,
         'V0': V0,
-        'A': degrees(A),
+        'A': A,
         'Vw': Vw,
         'Vk': Vk,
-        'A0': degrees(A0),
+        'A0': A0,
     }
     return data
 
 def correct_mass_fuel():
-    global m_correct_PN, dm, m2_correct
+    global m_correct_PN
 
-    last_z = z[1]
-    z2_correct_first = None
-    m2_correct_first = None
-    tk_correct_first = None
-    dV_first = None
-    Vmax_first = None
-    
+    dV = 100
+    # Vmax = float(input("Расчитайте Vmax и введите его: "))
 
-
-    while True:
-
-        Vmax = float(input("Расчитайте Vmax и введите его: "))
+    while abs(dV) > 10:
+        Vmax = 7.483
         dV = (Vmax - Vk) * 1000
 
-        if abs(dV) <= 10:
-            break
 
-        z2_correct = last_z * exp(-(dV / P_ud_vacuum[1]))
-        last_z = z2_correct
+        z2_correct = z[1] * exp(-(dV / P_ud_vacuum[1]))
         m_correct = ((z2_correct - 1) / z2_correct) * m[1]
         tk_correct = m_correct / dmt[1]
 
-        m2_correct = m_correct
+        dV = round(dV, 3)
+        z2_correct = round(z2_correct, 3)
+        m2_correct = round(m_correct, 3)
+        tk_correct = round(tk_correct, 3)
 
         dm = mt[1] - m_correct
         m_correct_PN = m_pn + dm
 
-        if z2_correct_first == None:
-            z2_correct_first = z2_correct
-            m2_correct_first = m2_correct
-            tk_correct_first = tk_correct
-            dV_first = dV
-            Vmax_first = Vmax
+        Vmax = 7.59
+        dV = (Vmax - Vk) * 1000
+        # Vmax = float(input("Расчитайте Vmax и введите его: "))
 
         print(f"\ndV: {dV}\nz2: {z2_correct}\nm_correct: {m_correct}\ntk_correct: {tk_correct}")
         print("Ошибка в скорости выведения: ", dV)
 
+        data = {
+            'Vmax': Vmax,
+            'dV': dV,
+            'dm': dm,
+            'm_correct_PN': m_correct_PN,
+            'z2_correct': z2_correct,
+            'm2_correct': m2_correct,
+        }
 
-    data = {
-        'Vmax': Vmax,
-        'Vmax_first': Vmax_first,
-        'dV': dV_first,
-        'dm': dm,
-        'z2_correct': z2_correct_first,
-        'm_correct_PN': m_correct_PN,
-        'm2_correct_first': m2_correct_first,
-        'm2_correct': m2_correct,
-        'tk_correct': tk_correct_first,
-        'mt2': mt[1],
-    }
-
-    return data
+        return data
 
 
 def swap_start_to_iner():
 
-    Xk = float(input("Введите Xk при Vmax: "))
-    Yk = float(input("Введите Yk: "))
-    Uk = float(input("Введите Uk: "))
-    Wk = float(input("Введите Wk: "))
-    # Xk = 887.994
-    # Yk = 128.115
-    # Uk = 7.521
-    # Wk = -1.028
+    # Xk = float(input("Введите Xk при Vmax: "))
+    # Yk = float(input("Введите Yk: "))
+    # Uk = float(input("Введите Uk: "))
+    # Wk = float(input("Введите Wk: "))
+    Xk = 887.994
+    Yk = 128.115
+    Uk = 7.521
+    Wk = -1.028
 
 
     x0 = -Xk * cos(A0) * sin(fi_0) + (R + Yk) * cos(fi_0)
@@ -221,9 +200,6 @@ def swap_start_to_iner():
 
     r0 = sqrt(x0 **2 + y0 **2 + z0 **2)
     dr = r0 - R
-    # dr = r0 - R if abs((r0 - R) / H0) * 100 < 99 else H0 - (random.randint(1, 10)) / 1000
-    # r0 = R + dr
-
 
     Vx0 = -Uk * cos(A0) * sin(fi_0) + Wk * cos(fi_0) - w_Earth * y0
     Vy0 = Uk * sin(A0) + w_Earth * x0
@@ -239,7 +215,7 @@ def swap_start_to_iner():
     C3 = x0 * Vy0 - y0 * Vx0
     C = sqrt(C1 **2 + C2 **2 + C3 **2)
 
-    tg_omega0 = -C1 / C2
+    tg_omega0 = C1 / -C2
     omega0 = atan(tg_omega0)
 
     cos_i = C3 / C
@@ -263,8 +239,8 @@ def swap_start_to_iner():
 
 
     # Exrection from NOO to ragrered orbit:
-    r1 = r0
-    # r1 = 6559.5
+    # r1 = r0
+    r1 = 6559.5
     r2 = R + H
     ra = r2
 
@@ -279,24 +255,23 @@ def swap_start_to_iner():
     di = i_target - i
     i1 = di * 0.04
     i2 = di * 0.96
-    print(f"di: {degrees(di)} i1: {degrees(i1)} i2: {degrees(i2)}")
 
     dv1 = sqrt(Vp1 **2 + Vc1 **2 - 2 * Vp1 * Vc1 * cos(i1))
     dv2 = sqrt(Va2 **2 + Va1 **2 - 2 * Va2 * Va1 * cos(i2))
     dv3 = sqrt(Vp2 **2 + Vc2 **2 - 2 * Vp2 * Vc2 * cos(di - i1 - i2))
+
     Vx = dv1 + dv2 + dv3
-    print(f"dv1: {dv1} dv2: {dv2} dv3: {dv3} Vx: {Vx}")
 
-    dv1_optim = float(input("Введите расчитанное оптимальное значение dv1: "))
-    dv2_optim = float(input("Введите расчитанное оптимальное значение dv2: "))
-    dv3_optim = float(input("Введите расчитанное оптимальное значение dv3: "))
-    r_optim = float(input("Введите оптимальное значение высоты: "))
+    # dv1_optim = float(input("Введите расчитанное оптимальное значение dv1: "))
+    # dv2_optim = float(input("Введите расчитанное оптимальное значение dv2: "))
+    # dv3_optim = float(input("Введите расчитанное оптимальное значение dv3: "))
+    # r_optim = float(input("Введите оптимальное значение высоты: "))
 
 
-    # dv1_optim = 0.297
-    # dv2_optim = 1.168
-    # dv3_optim = 0.068
-    # r_optim = 6826
+    dv1_optim = 0.297
+    dv2_optim = 1.168
+    dv3_optim = 0.068
+    r_optim = 6826
     Vx_optim = dv1_optim + dv2_optim + dv3_optim
 
     m1_new = m_correct_PN
@@ -345,7 +320,7 @@ def swap_start_to_iner():
         'deg_omega0': degrees(omega0),
         'cos_i': cos_i,
         'i_by_inert': i_by_inert,
-        'deg_i_by_inert': degrees(i_by_inert),
+        'deg_i_by_itert': degrees(i_by_inert),
         'v0_by_inert': v0_by_inert,
         'A_dist': A_dist,
         'e': e,
